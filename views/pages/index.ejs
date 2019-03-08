@@ -7,16 +7,103 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-    <title>Hello, world!</title>
+    <style>
+      body {
+      padding-top: 5rem;
+    }
+    .starter-template {
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+    </style>
+    <title><%= title %></title>
   </head>
   <body>
-    <h1>Hello, world!</h1>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">Taller 6 visual regression testing - Jairo Fernando Solarte</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    
+    </nav>
+    <main role="main" class="container">
+
+      <div class="starter-template">
+        <h1><%= title %></h1>
+        <p class="lead">Pruebas</p>
+        <button id='btnP'  class="btn btn-primary btn-lg btn-block">Realizar Prueba</button>
+        <hr>
+        <div style="display:none" id='pogressP' class="progress">
+            <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 10%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div  class="row" id='last_prueba'>
+
+        </div>
+        <table class="table table-sm ">
+            <tr>
+              <th scope="col">Fecha</th>
+              <th scope="col">Imagen Base</th> 
+              <th scope="col">Imgen Modificada</th> 
+              <th scope="col">Diferencia</th>
+              <th scope="col">Info Importante</th>
+            </tr>
+            <% pruebas.forEach(function(prueba) { %>
+              <tr style="font-size: 8px">
+                <td><%=new Date(Math.round(prueba.jsonImg)).toString() %></td>
+                <td><img style="width: 200px;" src="/<%=Math.round(prueba.jsonImg) %>_1.png"></td>
+                <td><img style="width: 200px;" src="/<%=Math.round(prueba.jsonImg) %>_2.png"></td>
+                <td><img style="width: 200px;" src="/<%=Math.round(prueba.jsonImg) %>_t.png"></td>
+                <td ><code><%= prueba.jsonInfo %></code></td>
+                
+              </tr>
+            <% }); %>
+        </table>
+      </div>
+    
+    </main>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"  crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script>
+
+      $(document).ready(function(){
+        $("#pogressP").hide();
+        $("#btnP").click(function(){
+          $("#btnP").attr("disabled", "disabled");
+          $('.lead').text('Procesando Pruebas.. espere por favor'); 
+          $("#pogressP").show(); 
+          var t = 10; 
+          var myVar = setInterval(function(){ 
+            $("#pogressP .progress-bar").css('width',t+'%');
+            t=t+3;
+            if(t > 50){
+              $('.lead').text('Comparando Imagenes....');
+            } 
+           }, 1000);
+          $('#last_prueba').load('/prueba',function(){
+            clearInterval(myVar);
+            $("#pogressP .progress-bar").css('width','100%');
+
+            p=5; 
+            var myVar2 = setInterval(function(){ 
+             
+              $('.lead').text('Prueba Finalizada.. La Pagina se recarga en '+p); 
+              p--; 
+
+              if(p==0){
+                clearInterval(myVar2);
+                location.reload(); 
+              }
+
+           }, 1000);
+
+          });
+        }); 
+      });
+      
+    </script>
   </body>
 </html>
